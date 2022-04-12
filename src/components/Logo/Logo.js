@@ -1,24 +1,13 @@
-import React from 'react';
-import styled from 'styled-components/macro';
+import React from "react";
+import styled from "styled-components/macro";
 
-import { WEIGHTS } from '../../constants';
-
-const Logo = (props) => {
-  return (
-    <Link href="/">
-      <Wrapper {...props}>Sole&amp;Ankle</Wrapper>
-    </Link>
-  );
+export const Logo = ({ text, ...rest }) => {
+  return <StyledLogo {...rest}>{text}</StyledLogo>;
 };
 
-const Link = styled.a`
-  text-decoration: none;
-  color: inherit;
-`;
-
-const Wrapper = styled.h1`
-  font-size: 1.5rem;
-  font-weight: ${WEIGHTS.bold};
+const StyledLogo = styled.span`
+  font-weight: 800;
+  font-size: ${24 / 16}rem;
 `;
 
 export default Logo;

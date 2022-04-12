@@ -1,9 +1,7 @@
-import React from 'react';
-import styled from 'styled-components/macro';
-
-import { COLORS, WEIGHTS } from '../../constants';
-import { formatPrice, pluralize, isNewShoe } from '../../utils';
-import Spacer from '../Spacer';
+import React from "react";
+import styled from "styled-components/macro";
+import { COLORS } from "../../constants";
+import { formatPrice, isNewShoe } from "../../utils";
 
 const ShoeCard = ({
   slug,
@@ -14,73 +12,80 @@ const ShoeCard = ({
   releaseDate,
   numOfColors,
 }) => {
-  // There are 3 variants possible, based on the props:
-  //   - new-release
-  //   - on-sale
-  //   - default
-  //
-  // Any shoe released in the last month will be considered
-  // `new-release`. Any shoe with a `salePrice` will be
-  // on-sale. In theory, it is possible for a shoe to be
-  // both on-sale and new-release, but in this case, `on-sale`
-  // will triumph and be the variant used.
-  // prettier-ignore
-  const variant = typeof salePrice === 'number'
-    ? 'on-sale'
-    : isNewShoe(releaseDate)
-      ? 'new-release'
-      : 'default'
+  const PriceComponent = salePrice ? OldPrice : DefaultPrice;
+
+  const promo = salePrice ? (
+    <SalePromo>Sale</SalePromo>
+  ) : isNewShoe(releaseDate) ? (
+    <NewReleasePromo>Just Released!</NewReleasePromo>
+  ) : null;
 
   return (
-    <Link href={`/shoe/${slug}`}>
-      <Wrapper>
-        <ImageWrapper>
-          <Image alt="" src={imageSrc} />
-        </ImageWrapper>
-        <Spacer size={12} />
-        <Row>
-          <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
-        </Row>
-        <Row>
-          <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
-        </Row>
-      </Wrapper>
-    </Link>
+    <Wrapper>
+      <Image src={imageSrc} />
+      <SplitBox>
+        <StrongText>{name}</StrongText>
+        <PriceComponent>{formatPrice(price)}</PriceComponent>
+      </SplitBox>
+      <SplitBox>
+        {numOfColors} colors
+        {salePrice && <NewPrice>{formatPrice(salePrice)}</NewPrice>}
+      </SplitBox>
+      {promo}
+    </Wrapper>
   );
 };
 
-const Link = styled.a`
-  text-decoration: none;
-  color: inherit;
-`;
-
-const Wrapper = styled.article``;
-
-const ImageWrapper = styled.div`
+const Wrapper = styled.div`
   position: relative;
+  width: 100%;
 `;
 
-const Image = styled.img``;
-
-const Row = styled.div`
-  font-size: 1rem;
+const Image = styled.img`
+  width: 100%;
 `;
 
-const Name = styled.h3`
-  font-weight: ${WEIGHTS.medium};
+const Promo = styled.div`
+  position: absolute;
+  top: 8px;
+  right: -8px;
+  padding: 4px;
+  font-size: ${14 / 16}rem;
+  color: white;
+`;
+
+const SalePromo = styled(Promo)`
+  background-color: ${COLORS.primary};
+`;
+
+const NewReleasePromo = styled(Promo)`
+  background-color: ${COLORS.secondary};
+`;
+
+const SplitBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const StrongText = styled.span`
   color: ${COLORS.gray[900]};
+  font-weight: 600;
+  white-space: nowrap;
 `;
 
-const Price = styled.span``;
-
-const ColorInfo = styled.p`
-  color: ${COLORS.gray[700]};
+const DefaultPrice = styled.span`
+  font-size: 1rem;
+  font-weight: 600;
 `;
 
-const SalePrice = styled.span`
-  font-weight: ${WEIGHTS.medium};
+const OldPrice = styled(DefaultPrice)`
+  text-decoration: line-through;
+  font-weight: 500;
+`;
+
+const NewPrice = styled(DefaultPrice)`
   color: ${COLORS.primary};
+  font-weight: 500;
 `;
 
 export default ShoeCard;
